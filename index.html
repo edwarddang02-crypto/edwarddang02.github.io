@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVETI 测试：你的恋爱人格标签</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary: #ff4d94;
+            --light: #fff0f5;
+            --dark: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #fff0f5, #f8e1eb);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 77, 148, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { font-size: 18px; opacity: 0.9; }
+        
+        .progress-container {
+            padding: 15px 30px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), #ff80bf);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .question-container {
+            padding: 40px 30px;
+            min-height: 420px;
+        }
+        
+        .question-number {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            line-height: 1.5;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .option {
+            padding: 18px 22px;
+            background: #f9f9f9;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: var(--primary);
+            background: #fff5fa;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #fff0f5;
+            font-weight: 500;
+        }
+        
+        .scale-option.selected {
+            border-color: var(--primary);
+            background: #fff0f5;
+            box-shadow: 0 0 0 3px rgba(255, 77, 148, 0.2);
+        }
+        
+        .navigation {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+        
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-prev { background: #eee; color: #666; }
+        .btn-next { background: var(--primary); color: white; }
+        
+        .result-screen {
+            display: none;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .personality-tag {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+            letter-spacing: 4px;
+        }
+        
+        .dimension {
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .dim-name {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .dim-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dim-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff4d94, #ff80bf);
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+        
+        .restart {
+            margin-top: 30px;
+            background: #ff4d94;
+            color: white;
+            padding: 14px 40px;
+        }
+
+        /* 新增：16种人格卡片样式 */
+        .grid-card {
+            background: #fff5fa;
+            border: 2px solid #ffe6f0;
+            border-radius: 16px;
+            padding: 18px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        .grid-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 77, 148, 0.15);
+        }
+        .grid-card .code {
+            background: #ff4d94;
+            color: white;
+            font-size: 13px;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 主页面 -->
+        <div id="home" class="question-container" style="text-align:center; padding-top:80px;">
+            <h1 style="font-size:32px; color:#ff4d94; margin-bottom:16px;">Love-Oriented Virtual Examination</h1>
+            <h2 style="font-size:24px; margin-bottom:40px;">你的恋爱人格标签</h2>
+            <p style="font-size:18px; color:#666; margin-bottom:50px;">这也能测？来试试看吧～</p>
+            <button onclick="startTest()" class="btn-next" style="padding:16px 50px; font-size:18px;">开始测试</button>
+        </div>
+
+        <!-- 题目界面 -->
+        <div id="quiz" style="display:none;">
+            <header>
+                <h1>LOVETI 测试</h1>
+                <p class="subtitle">你的恋爱人格标签</p>
+            </header>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-number">第 <span id="q-number">1</span> 题 / 12 题</div>
+                <div id="question-text" class="question-text"></div>
+                <div id="options" class="options"></div>
+            </div>
+
+            <div class="navigation">
+                <button onclick="prevQuestion()" class="btn-prev" id="btn-prev">上一题</button>
+                <button onclick="nextQuestion()" class="btn-next" id="btn-next">下一题</button>
+            </div>
+        </div>
+
+        <!-- 结果页面（已完整加入16种人格全览 + 专属BGM） -->
+        <div id="result" class="result-screen">
+            <h1 style="color:#ff4d94; margin-bottom:10px;">你的 LOVETI 恋爱人格是</h1>
+            <div id="personality-code" style="font-size: 20px; color: #888; font-weight: bold; margin-top: 10px;"></div>
+            <div id="personality-tag" class="personality-tag"></div>
+            <p id="personality-desc" style="font-size: 16px; color: #555; margin-bottom: 25px; line-height: 1.6; font-style: italic;"></p>
+            
+            <div style="background: #fff5fa; padding: 15px; border-radius: 12px; text-align: left; margin-bottom: 30px; border: 1px solid #ffe6f0;">
+                <p style="margin-bottom: 10px; font-size: 15px;"><strong>✨ 灵魂伴侣：</strong><span id="personality-match"></span></p>
+                <p style="font-size: 15px;"><strong>💡 恋爱建议：</strong><span id="personality-advice"></span></p>
+            </div>
+            
+            <div style="margin:30px 0;">
+                <h3 style="color:#666; margin-bottom:20px;">维度得分</h3>
+                
+                <div class="dimension">
+                    <div class="dim-name">主动 / 被动 <span id="ir-label" style="float:right; font-weight:500;"></span></div>
+                    <div class="dim-bar"><div id="ir-bar" class="dim-fill" style="width:50%"></div></div>
+                </div>
+                
+                <div class="dimension">
+                    <div class="dim-name">浪漫 / 现实 <span id="rp-label" style="float:right; font-weight:500;"></span></div>
+                    <div class="dim-bar"><div id="rp-bar" class="dim-fill" style="width:50%"></div></div>
+                </div>
+                
+                <div class="dimension">
+                    <div class="dim-name">情感外露 / 内敛 <span id="em-label" style="float:right; font-weight:500;"></span></div>
+                    <div class="dim-bar"><div id="em-bar" class="dim-fill" style="width:50%"></div></div>
+                </div>
+                
+                <div class="dimension">
+                    <div class="dim-name">稳定守护 / 冒险探索 <span id="sa-label" style="float:right; font-weight:500;"></span></div>
+                    <div class="dim-bar"><div id="sa-bar" class="dim-fill" style="width:50%"></div></div>
+                </div>
+            </div>
+            
+            <button onclick="restartTest()" class="restart">重新测试</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "一天上午，你在一节无聊的公共课上看到一名很有眼缘的同学，你最可能怎么做？", options: [
+                { text: "下课找个自然理由搭话（比如问作业/课件）", score: {I:2, E:2} },
+                { text: "故意多出现几次，让对方“熟悉你的存在”", score: {I:1, E:1} },
+                { text: "默默观察，等一个“刚好合理”的机会", score: {R:1, M:1} },
+                { text: "低头当作没看见，继续自己的事", score: {R:2, M:2} }
+            ]},
+            { q: "假如你加上了那位你想增进了解的同学的微信，你发现对方发了一条比较有情绪的朋友圈，你会：", options: [
+                { text: "直接私聊关心", score: {I:2, E:2} },
+                { text: "点个赞，或者评论一句", score: {I:1, E:1} },
+                { text: "看了很多遍，但什么都不做", score: {R:1, M:1} },
+                { text: "等对方来找你聊", score: {R:2, M:2} }
+            ]},
+            { q: "和一个人暧昧了一段时间，对方总是发一些暧昧的消息但没明确表态，你会：", options: [
+                { text: "主动推进，把关系说清楚", score: {E:1, I:1} },
+                { text: "继续用同样暧昧的方式回应，享受这种模糊的感觉", score: {M:1, A:1} },
+                { text: "冷静分析：对方条件如何？值不值得投入？", score: {P:1, S:1} },
+                { text: "慢慢减少联系，看对方会不会主动追问", score: {R:1, M:1} }
+            ]},
+            { q: "假如那个一直和你很聊得来的ta回复消息开始变慢，你的第一反应是", options: [
+                { text: "ta可能只是这两天比较忙，我要主动找话题维持节奏", score: {R:2, S:2} },
+                { text: "也开始降低回复频率（关系要对等 凭啥我非得那么主动）", score: {P:1, A:1} },
+                { text: "会想很多 难受极了（完了被钓了 ta是不是嫌我烦了 我可能比较无趣）", score: {R:1, A:1} },
+                { text: "直接去做别的事，不太受影响", score: {P:2, S:2} }
+            ]},
+            { q: "我相信一见钟情，爱情应该像电影或小说一样充满心动和仪式感。", type: "scale", dimension: "RP" },
+            { q: "你对一个喜欢的人心动了，你最倾向的推进方式是：", options: [
+                { text: "主动约对方出来，找机会直接表白", score: {I:1, E:1} },
+                { text: "等对方先表现出明显兴趣，再慢慢回应发展", score: {R:1} },
+                { text: "先成为很好的朋友，自然而然走到一起", score: {S:1, P:1} },
+                { text: "享受当下暧昧，多认识几个有趣的人，不急于固定", score: {A:1} }
+            ]},
+            { q: "和恋人发生争执，冷战了两天，你最可能的反应是：", options: [
+                { text: "主动发消息道歉或解释，想尽快和好", score: {E:1, S:1, I:1} },
+                { text: "保持沉默，等对方先来找我", score: {M:1, R:1} },
+                { text: "出去和朋友玩/旅行，冷静一下再回来", score: {A:1} },
+                { text: "认真反思问题，列出解决方案后再沟通", score: {P:1, S:1} }
+            ]},
+            { q: "在恋爱中，我更享受稳定的长期陪伴，而不是不断的新鲜刺激和冒险。", type: "scale", dimension: "SA" },
+            { q: "第一次正式约会，你最希望是怎样的体验？", options: [
+                { text: "精心准备的浪漫晚餐 + 看日落/烟花，充满仪式感", score: {R:1, E:1} },
+                { text: "简单舒服的咖啡或散步，聊聊三观和生活规划", score: {P:1, S:1} },
+                { text: "一起尝试新奇活动，比如密室逃脱或夜市探店", score: {A:1} },
+                { text: "对方安排一切，我跟着感觉走就好", score: {R:1, M:1} }
+            ]},
+            { q: "看到恋人和异性好友聊天很开心，你内心第一反应是：", options: [
+                { text: "直接走过去加入，或事后开玩笑表达自己的小醋意", score: {E:1} },
+                { text: "心里有点不舒服，但选择默默观察，不说出来", score: {M:1} },
+                { text: "觉得很正常，信任对方，专注于自己的事", score: {P:1, S:1} },
+                { text: "反而觉得有趣，甚至鼓励对方多社交", score: {A:1} }
+            ]},
+            { q: "我喜欢在恋爱中主动掌握节奏，率先表达心意、规划未来。", type: "scale", dimension: "IR" },
+            { q: "如果你想象理想的恋爱关系，会更接近哪一种？", options: [
+                { text: "像偶像剧一样，每天都有小惊喜，永远保持心动", score: {R:1, E:1} },
+                { text: "平淡但可靠的日常生活，互相支持、一起变老", score: {S:1, P:1} },
+                { text: "可以有短暂分离或各自探索，但最终回到彼此身边", score: {A:1} },
+                { text: "一起尝试各种新体验、旅行、挑战，永远不无聊", score: {A:1, R:1} }
+            ]}
+        ];
+
+        // 16种恋爱人格全览数据（完全按照你提供的顺序和文案）
+        const resultData = {
+            "IRES": { title: "纯爱战神", desc: "在这个快节奏时代，你的深情是唯一的硬通货。你从不掩饰自己的爱意，一旦认定便孤注一掷。", match: "RRMS (孤傲的月亮)", advice: "偶尔收敛一点光芒，别把对方灼伤了。" },
+            "IREA": { title: "浪漫纵火犯", desc: "你负责制造火花，而对方负责在这场大火里迷失。", match: "RPMS (人间清醒器)", advice: "别只顾着点火，也要学会在平淡中维持温度。" },
+            "IRMS": { title: "深情守卫", desc: "你的浪漫不声不响，却能在最细节的地方给足安全感。", match: "IPEA (快乐冒险家)", advice: "爱要大声说出来，别总指望对方去猜。" },
+            "IRMA": { title: "隐秘诱惑者", desc: "你像一杯烈酒，入口温和，后劲却让人欲罢不能。", match: "RRES (迎春花)", advice: "适当暴露一些真实的脆弱，反而更迷人。" },
+            "IPES": { title: "恋爱建筑师", desc: "比起虚无的誓言，你更想和对方一起供房、养猫、变老。", match: "RRMA (深海里的信)", advice: "偶尔制造一点计划外的惊喜，生活需要浪漫的点缀。" },
+            "IPEA": { title: "快乐冒险家", desc: "爱是游乐场，如果你不敢上过山车，那我们就此别过。", match: "IRMS (深情守卫)", advice: "在追求新鲜感的同时，也要留意身边默默陪伴的人。" },
+            "IPMS": { title: "稳健操盘手", desc: "理智是你的底色，你从不做亏本的感情投资。", match: "RPEA (随性漫游者)", advice: "爱情不是算术题，有时候需要一点盲目的冲动。" },
+            "IPMA": { title: "高位猎手", desc: "你主动是因为你胜券在握，这场博弈的节奏由你掌控。", match: "RPMA (坚硬的贝壳)", advice: "卸下防备，偶尔做一次输家也是一种体验。" },
+            "RRES": { title: "透明的雨滴", desc: "你表现得有多不在意，内心就有多渴望被对方打伞接住。", match: "IPMA (高位猎手)", advice: "主动伸出手，你想要的人才不会走散。" },
+            "RREA": { title: "自由的飞鸟", desc: "你渴望浪漫的共振，但随时准备飞回自己的岛屿。", match: "IPES (恋爱建筑师)", advice: "给对方多一点安全感，降落也是一种幸福。" },
+            "RRMS": { title: "孤傲的月亮", desc: "你从不奔向任何人，除非对方本身就是引力。", match: "IRES (纯爱战神)", advice: "偶尔主动一次，你会发现世界比想象中温暖。" },
+            "RRMA": { title: "深海里的信", desc: "你的爱意沉没在海底，等待一个愿意潜水的人来读。", match: "IREA (浪漫纵火犯)", advice: "把信浮出水面，别让等待变成遗憾。" },
+            "RPES": { title: "温暖避风港", desc: "你不会说甜言蜜语，但你的怀抱永远向疲惫的ta敞开。", match: "IRMA (隐秘诱惑者)", advice: "在照顾别人的同时，也别忘了表达自己的需求。" },
+            "RPEA": { title: "随性漫游者", desc: "顺其自然是你的恋爱信条，不强求，不执念。", match: "IPMS (稳健操盘手)", advice: "遇到真正心动的人，试着去用力争取一次。" },
+            "RPMS": { title: "人间清醒器", desc: "你看穿了所有的套路，所以很难再被廉价的真心感动。", match: "IREA (浪漫纵火犯)", advice: "偶尔允许自己“糊涂”一次，爱情本就是盲目的。" },
+            "RPMA": { title: "坚硬的贝壳", desc: "外壳是逻辑与现实，内里是只对一人柔软的珍珠。", match: "IRES (纯爱战神)", advice: "试着早一点敞开心扉，别让爱你的人等太久。" }
+        };
+
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        let scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
+
+        function startTest() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            currentQuestion = 0;
+            answers.fill(null);
+            scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('q-number').textContent = currentQuestion + 1;
+            document.getElementById('question-text').textContent = q.q;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            if (q.type === "scale") {
+                const scaleHTML = `
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        ${[1,2,3,4,5].map(n => `
+                            <div onclick="selectScale(${n})" 
+                                 class="option scale-option ${answers[currentQuestion] === n ? 'selected' : ''}" 
+                                 style="text-align:center;">
+                                ${n} ${n===1 ? '（非常不同意）' : n===5 ? '（非常同意）' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                optionsDiv.innerHTML = scaleHTML;
+            } else {
+                q.options.forEach((opt, index) => {
+                    const div = document.createElement('div');
+                    div.className = `option ${answers[currentQuestion] === index ? 'selected' : ''}`;
+                    div.textContent = opt.text;
+                    div.onclick = () => selectOption(index);
+                    optionsDiv.appendChild(div);
+                });
+            }
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            recalculateScores();
+            loadQuestion();
+        }
+
+        function selectScale(value) {
+            answers[currentQuestion] = value;
+            recalculateScores();
+            loadQuestion();
+        }
+
+        function recalculateScores() {
+            scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
+            
+            questions.forEach((q, i) => {
+                if (answers[i] === null) return;
+                
+                if (q.type === "scale") {
+                    const val = answers[i];
+                    if (q.dimension === "RP") {
+                        scores.R_total += val * 2;
+                        scores.P += (6 - val) * 2;
+                    } else if (q.dimension === "SA") {
+                        scores.S += val * 2;
+                        scores.A += (6 - val) * 2;
+                    } else if (q.dimension === "IR") {
+                        scores.I += val * 2;
+                        scores.R += (6 - val) * 2;
+                    }
+                } else {
+                    const opt = q.options[answers[i]];
+                    Object.keys(opt.score || {}).forEach(key => {
+                        if (scores[key] !== undefined) scores[key] += opt.score[key];
+                    });
+                }
+            });
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            document.getElementById('btn-prev').style.display = currentQuestion === 0 ? 'none' : 'block';
+            
+            const isLast = currentQuestion === questions.length - 1;
+            const btnNext = document.getElementById('btn-next');
+            
+            if (isLast) {
+                btnNext.textContent = '提交测试';
+                btnNext.onclick = submitTest;
+            } else {
+                btnNext.textContent = '下一题';
+                btnNext.onclick = nextQuestion;
+            }
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] === null) {
+                alert('请先选择一个答案哦～');
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function submitTest() {
+            if (answers.some(a => a === null)) {
+                alert('请完成所有题目后再提交！');
+                return;
+            }
+            
+            recalculateScores();
+            
+            const I_R = scores.I >= scores.R ? 'I' : 'R';
+            const R_P = scores.R_total >= scores.P ? 'R' : 'P';
+            const E_M = scores.E >= scores.M ? 'E' : 'M';
+            const S_A = scores.S >= scores.A ? 'S' : 'A';
+            
+            const personality = I_R + R_P + E_M + S_A;
+            
+            // --- 这里是新增的逻辑：从字典中获取数据 ---
+            // 如果计算出的组合意外不在字典里（防错机制），给个默认值
+            const finalData = resultData[personality] || {
+                title: "神秘探索者",
+                desc: "你的恋爱人格太独特，超出了系统的计算范围...",
+                match: "一切随缘",
+                advice: "做最真实的自己就好。"
+            };
+            
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            
+            // 把字典里的文案填入 HTML
+            document.getElementById('personality-code').textContent = personality;
+            document.getElementById('personality-tag').textContent = finalData.title;
+            document.getElementById('personality-desc').textContent = `“${finalData.desc}”`;
+            document.getElementById('personality-match').textContent = finalData.match;
+            document.getElementById('personality-advice').textContent = finalData.advice;
+            // --- 新增逻辑结束 ---
+            
+            document.getElementById('ir-label').textContent = I_R === 'I' ? '主动发起者' : '被动回应者';
+            document.getElementById('rp-label').textContent = R_P === 'R' ? '浪漫理想主义' : '现实实用主义';
+            document.getElementById('em-label').textContent = E_M === 'E' ? '情感外露' : '情感内敛';
+            document.getElementById('sa-label').textContent = S_A === 'S' ? '稳定守护' : '冒险探索';
+            
+            // 进度条百分比
+            const totalIR = Math.max(scores.I + scores.R, 1);
+            document.getElementById('ir-bar').style.width = (scores.I / totalIR * 100) + '%';
+            
+            const totalRP = Math.max(scores.R_total + scores.P, 1);
+            document.getElementById('rp-bar').style.width = (scores.R_total / totalRP * 100) + '%';
+            
+            const totalEM = Math.max(scores.E + scores.M, 1);
+            document.getElementById('em-bar').style.width = (scores.E / totalEM * 100) + '%';
+            
+            const totalSA = Math.max(scores.S + scores.A, 1);
+            document.getElementById('sa-bar').style.width = (scores.S / totalSA * 100) + '%';
+        }
+
+        function restartTest() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('home').style.display = 'block';
+        }
+
+        // 键盘支持
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('quiz').style.display === 'block') {
+                if (e.key === 'ArrowRight' || e.key === ' ') nextQuestion();
+                if (e.key === 'ArrowLeft') prevQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
