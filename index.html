@@ -21,26 +21,117 @@
             color: var(--dark);
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .container {
+            width: 100%;
             max-width: 680px;
-            margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(255, 77, 148, 0.15);
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 开始界面专属样式 */
+        .home-container {
+            padding: 60px 20px;
+            text-align: center;
+            background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.5" fill="%23ff4d94" fill-opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23dots)"/></svg>');
         }
         
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 50px 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 77, 148, 0.08);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .tags-wrap {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .badge {
+            background: #fff0f5;
+            color: #ff4d94;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #ffe6f0;
+        }
+        
+        .main-title {
+            font-size: 46px;
+            background: linear-gradient(135deg, #ff4d94, #ff80bf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-weight: 900;
+        }
+        
+        .sub-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .desc-text {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #ff4d94, #ff80bf);
+            color: white;
+            padding: 16px 55px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 77, 148, 0.3);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 77, 148, 0.4);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 77, 148, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 77, 148, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 77, 148, 0); }
+        }
+
+        /* 答题界面与结果界面样式 */
         header {
             background: var(--primary);
             color: white;
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
         
-        h1 { font-size: 28px; margin-bottom: 8px; }
-        .subtitle { font-size: 18px; opacity: 0.9; }
+        h1 { font-size: 24px; margin-bottom: 6px; }
+        .subtitle { font-size: 16px; opacity: 0.9; }
         
         .progress-container {
             padding: 15px 30px;
@@ -144,83 +235,105 @@
             font-size: 42px;
             font-weight: 700;
             color: var(--primary);
-            margin: 20px 0;
-            letter-spacing: 4px;
+            margin: 15px 0;
+            letter-spacing: 2px;
         }
         
         .dimension {
-            margin: 25px 0;
+            margin: 28px 0;
             text-align: left;
         }
         
-        .dim-name {
-            font-size: 16px;
+        /* 优化的维度条设计 */
+        .dim-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .dim-labels span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .dim-val {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .dim-bar-container {
+            height: 16px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
+        }
+        
+        .center-line {
+            position: absolute;
+            left: 50%;
+            top: -4px;
+            bottom: -4px;
+            width: 3px;
+            background: #fff;
+            z-index: 5;
+            border-radius: 2px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.15);
+            transform: translateX(-50%);
         }
         
         .dim-bar {
-            height: 10px;
-            background: #eee;
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* 带有微弹性的动画 */
+            border-radius: 8px;
         }
         
-        .dim-fill {
-            height: 100%;
-            background: linear-gradient(to right, #ff4d94, #ff80bf);
-            border-radius: 5px;
-            transition: width 0.6s ease;
+        .left-bar {
+            right: 50%; /* 锚定在中间，向左伸展 */
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .right-bar {
+            left: 50%; /* 锚定在中间，向右伸展 */
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
         }
         
         .restart {
             margin-top: 30px;
             background: #ff4d94;
             color: white;
-            padding: 14px 40px;
-        }
-
-        /* 新增：16种人格卡片样式 */
-        .grid-card {
-            background: #fff5fa;
-            border: 2px solid #ffe6f0;
-            border-radius: 16px;
-            padding: 18px;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-        .grid-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 77, 148, 0.15);
-        }
-        .grid-card .code {
-            background: #ff4d94;
-            color: white;
-            font-size: 13px;
-            padding: 3px 10px;
-            border-radius: 50px;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: 10px;
+            padding: 14px 45px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 主页面 -->
-        <div id="home" class="question-container" style="text-align:center; padding-top:80px;">
-            <h1 style="font-size:32px; color:#ff4d94; margin-bottom:16px;">Love-Oriented Virtual Examination</h1>
-            <h2 style="font-size:24px; margin-bottom:40px;">你的恋爱人格标签</h2>
-            <p style="font-size:18px; color:#666; margin-bottom:50px;">这也能测？来试试看吧～</p>
-            <button onclick="startTest()" class="btn-next" style="padding:16px 50px; font-size:18px;">开始测试</button>
+        <div id="home" class="home-container">
+            <div class="glass-card">
+                <div class="tags-wrap">
+                    <span class="badge">✨ 全新沉浸式体验</span>
+                    <span class="badge">💖 16型恋爱人格</span>
+                </div>
+                <h1 class="main-title">LOVETI</h1>
+                <h2 class="sub-title">你的专属「恋爱人格标签」</h2>
+                <p class="desc-text">揭开你在亲密关系中的真实底色<br>透过 12 个情境，遇见更懂爱的自己</p>
+                <button onclick="startTest()" class="btn-start">开始测试 🚀</button>
+            </div>
         </div>
 
-        <!-- 题目界面 -->
         <div id="quiz" style="display:none;">
             <header>
                 <h1>LOVETI 测试</h1>
-                <p class="subtitle">你的恋爱人格标签</p>
+                <p class="subtitle">寻找你的恋爱底色</p>
             </header>
 
             <div class="progress-container">
@@ -241,43 +354,70 @@
             </div>
         </div>
 
-        <!-- 结果页面（已完整加入16种人格全览 + 专属BGM） -->
         <div id="result" class="result-screen">
-            <h1 style="color:#ff4d94; margin-bottom:10px;">你的 LOVETI 恋爱人格是</h1>
-            <div id="personality-code" style="font-size: 20px; color: #888; font-weight: bold; margin-top: 10px;"></div>
+            <h2 style="color:#666; font-size:18px; margin-bottom:5px;">你的 LOVETI 恋爱人格是</h2>
+            <div id="personality-code" style="font-size: 22px; color: #ff80bf; font-weight: bold; margin-top: 5px;"></div>
             <div id="personality-tag" class="personality-tag"></div>
             <p id="personality-desc" style="font-size: 16px; color: #555; margin-bottom: 25px; line-height: 1.6; font-style: italic;"></p>
             
-            <div style="background: #fff5fa; padding: 15px; border-radius: 12px; text-align: left; margin-bottom: 30px; border: 1px solid #ffe6f0;">
-                <p style="margin-bottom: 10px; font-size: 15px;"><strong>✨ 灵魂伴侣：</strong><span id="personality-match"></span></p>
-                <p style="font-size: 15px;"><strong>💡 恋爱建议：</strong><span id="personality-advice"></span></p>
+            <div style="background: #fff5fa; padding: 20px; border-radius: 16px; text-align: left; margin-bottom: 35px; border: 1px solid #ffe6f0;">
+                <p style="margin-bottom: 12px; font-size: 15px;"><strong>✨ 灵魂伴侣：</strong><span id="personality-match" style="color: #ff4d94; font-weight: 500;"></span></p>
+                <p style="font-size: 15px; line-height: 1.5;"><strong>💡 恋爱建议：</strong><span id="personality-advice"></span></p>
             </div>
             
-            <div style="margin:30px 0;">
-                <h3 style="color:#666; margin-bottom:20px;">维度得分</h3>
+            <div style="margin:20px 0;">
+                <h3 style="color:#444; margin-bottom:25px; font-size: 18px; text-align: center;">核心维度图谱</h3>
                 
                 <div class="dimension">
-                    <div class="dim-name">主动 / 被动 <span id="ir-label" style="float:right; font-weight:500;"></span></div>
-                    <div class="dim-bar"><div id="ir-bar" class="dim-fill" style="width:50%"></div></div>
+                    <div class="dim-labels">
+                        <span>主动发起者 (I) <span id="ir-val-l" class="dim-val"></span></span>
+                        <span><span id="ir-val-r" class="dim-val"></span> 被动回应者 (R)</span>
+                    </div>
+                    <div class="dim-bar-container">
+                        <div class="center-line"></div>
+                        <div id="ir-left" class="dim-bar left-bar"></div>
+                        <div id="ir-right" class="dim-bar right-bar"></div>
+                    </div>
                 </div>
                 
                 <div class="dimension">
-                    <div class="dim-name">浪漫 / 现实 <span id="rp-label" style="float:right; font-weight:500;"></span></div>
-                    <div class="dim-bar"><div id="rp-bar" class="dim-fill" style="width:50%"></div></div>
+                    <div class="dim-labels">
+                        <span>浪漫理想主义 (R) <span id="rp-val-l" class="dim-val"></span></span>
+                        <span><span id="rp-val-r" class="dim-val"></span> 现实实用主义 (P)</span>
+                    </div>
+                    <div class="dim-bar-container">
+                        <div class="center-line"></div>
+                        <div id="rp-left" class="dim-bar left-bar"></div>
+                        <div id="rp-right" class="dim-bar right-bar"></div>
+                    </div>
                 </div>
                 
                 <div class="dimension">
-                    <div class="dim-name">情感外露 / 内敛 <span id="em-label" style="float:right; font-weight:500;"></span></div>
-                    <div class="dim-bar"><div id="em-bar" class="dim-fill" style="width:50%"></div></div>
+                    <div class="dim-labels">
+                        <span>情感外露 (E) <span id="em-val-l" class="dim-val"></span></span>
+                        <span><span id="em-val-r" class="dim-val"></span> 情感内敛 (M)</span>
+                    </div>
+                    <div class="dim-bar-container">
+                        <div class="center-line"></div>
+                        <div id="em-left" class="dim-bar left-bar"></div>
+                        <div id="em-right" class="dim-bar right-bar"></div>
+                    </div>
                 </div>
                 
                 <div class="dimension">
-                    <div class="dim-name">稳定守护 / 冒险探索 <span id="sa-label" style="float:right; font-weight:500;"></span></div>
-                    <div class="dim-bar"><div id="sa-bar" class="dim-fill" style="width:50%"></div></div>
+                    <div class="dim-labels">
+                        <span>稳定守护 (S) <span id="sa-val-l" class="dim-val"></span></span>
+                        <span><span id="sa-val-r" class="dim-val"></span> 冒险探索 (A)</span>
+                    </div>
+                    <div class="dim-bar-container">
+                        <div class="center-line"></div>
+                        <div id="sa-left" class="dim-bar left-bar"></div>
+                        <div id="sa-right" class="dim-bar right-bar"></div>
+                    </div>
                 </div>
             </div>
             
-            <button onclick="restartTest()" class="restart">重新测试</button>
+            <button onclick="restartTest()" class="restart">重新测定</button>
         </div>
     </div>
 
@@ -342,24 +482,23 @@
             ]}
         ];
 
-        // 16种恋爱人格全览数据（完全按照你提供的顺序和文案）
         const resultData = {
             "IRES": { title: "纯爱战神", desc: "在这个快节奏时代，你的深情是唯一的硬通货。你从不掩饰自己的爱意，一旦认定便孤注一掷。", match: "RRMS (孤傲的月亮)", advice: "偶尔收敛一点光芒，别把对方灼伤了。" },
-            "IREA": { title: "浪漫纵火犯", desc: "你负责制造火花，而对方负责在这场大火里迷失。", match: "RPMS (人间清醒器)", advice: "别只顾着点火，也要学会在平淡中维持温度。" },
-            "IRMS": { title: "深情守卫", desc: "你的浪漫不声不响，却能在最细节的地方给足安全感。", match: "IPEA (快乐冒险家)", advice: "爱要大声说出来，别总指望对方去猜。" },
-            "IRMA": { title: "隐秘诱惑者", desc: "你像一杯烈酒，入口温和，后劲却让人欲罢不能。", match: "RRES (迎春花)", advice: "适当暴露一些真实的脆弱，反而更迷人。" },
-            "IPES": { title: "恋爱建筑师", desc: "比起虚无的誓言，你更想和对方一起供房、养猫、变老。", match: "RRMA (深海里的信)", advice: "偶尔制造一点计划外的惊喜，生活需要浪漫的点缀。" },
-            "IPEA": { title: "快乐冒险家", desc: "爱是游乐场，如果你不敢上过山车，那我们就此别过。", match: "IRMS (深情守卫)", advice: "在追求新鲜感的同时，也要留意身边默默陪伴的人。" },
-            "IPMS": { title: "稳健操盘手", desc: "理智是你的底色，你从不做亏本的感情投资。", match: "RPEA (随性漫游者)", advice: "爱情不是算术题，有时候需要一点盲目的冲动。" },
-            "IPMA": { title: "高位猎手", desc: "你主动是因为你胜券在握，这场博弈的节奏由你掌控。", match: "RPMA (坚硬的贝壳)", advice: "卸下防备，偶尔做一次输家也是一种体验。" },
-            "RRES": { title: "透明的雨滴", desc: "你表现得有多不在意，内心就有多渴望被对方打伞接住。", match: "IPMA (高位猎手)", advice: "主动伸出手，你想要的人才不会走散。" },
-            "RREA": { title: "自由的飞鸟", desc: "你渴望浪漫的共振，但随时准备飞回自己的岛屿。", match: "IPES (恋爱建筑师)", advice: "给对方多一点安全感，降落也是一种幸福。" },
-            "RRMS": { title: "孤傲的月亮", desc: "你从不奔向任何人，除非对方本身就是引力。", match: "IRES (纯爱战神)", advice: "偶尔主动一次，你会发现世界比想象中温暖。" },
-            "RRMA": { title: "深海里的信", desc: "你的爱意沉没在海底，等待一个愿意潜水的人来读。", match: "IREA (浪漫纵火犯)", advice: "把信浮出水面，别让等待变成遗憾。" },
-            "RPES": { title: "温暖避风港", desc: "你不会说甜言蜜语，但你的怀抱永远向疲惫的ta敞开。", match: "IRMA (隐秘诱惑者)", advice: "在照顾别人的同时，也别忘了表达自己的需求。" },
-            "RPEA": { title: "随性漫游者", desc: "顺其自然是你的恋爱信条，不强求，不执念。", match: "IPMS (稳健操盘手)", advice: "遇到真正心动的人，试着去用力争取一次。" },
-            "RPMS": { title: "人间清醒器", desc: "你看穿了所有的套路，所以很难再被廉价的真心感动。", match: "IREA (浪漫纵火犯)", advice: "偶尔允许自己“糊涂”一次，爱情本就是盲目的。" },
-            "RPMA": { title: "坚硬的贝壳", desc: "外壳是逻辑与现实，内里是只对一人柔软的珍珠。", match: "IRES (纯爱战神)", advice: "试着早一点敞开心扉，别让爱你的人等太久。" }
+            "IREA": { title: "纵火犯", desc: "你负责制造火花，而对方负责在这场大火里迷失。", match: "RPMS (清醒者)", advice: "在平淡中维持温度。" },
+            "IRMS": { title: "守卫", desc: "你的浪漫不声不响，却能在最细节的地方给足安全感。", match: "IPEA (冒险家)", advice: "爱要大声说出来。" },
+            "IRMA": { title: "诱惑者", desc: "你像一杯烈酒，入口温和，后劲却让人欲罢不能。", match: "RRES (透明雨滴)", advice: "暴露一些真实的脆弱，更迷人。" },
+            "IPES": { title: "建筑师", desc: "比起虚无的誓言，你更想和对方一起供房、养猫、变老。", match: "RRMA (深海里的信)", advice: "生活需要浪漫的点缀。" },
+            "IPEA": { title: "冒险家", desc: "爱是游乐场，如果你不敢上过山车，那我们就此别过。", match: "IRMS (守卫)", advice: "在追求新鲜感的同时，也要留意身边默默陪伴的人。" },
+            "IPMS": { title: "操盘手", desc: "理智是你的底色，你从不做亏本的感情投资。", match: "RPEA (漫游者)", advice: "有时候我们需要一点盲目的冲动。" },
+            "IPMA": { title: "猎手", desc: "你主动是因为你胜券在握，这场博弈的节奏由你掌控。", match: "RPMA (石头)", advice: "不妨卸下防备。" },
+            "RRES": { title: "透明雨滴", desc: "你表现得有多不在意，内心就有多渴望被对方打伞接住。", match: "IPMA (猎手)", advice: "主动伸出手，想要的人才不会走散。" },
+            "RREA": { title: "自由的人", desc: "你渴望浪漫的共振，但随时准备飞回自己的岛屿。", match: "IPES (建筑师)", advice: "给对方多一点安全感，降落也是一种幸福。" },
+            "RRMS": { title: "孤傲的月亮", desc: "你从不奔向任何人，除非对方本身就是引力。", match: "IRES (纯爱战神)", advice: "偶尔主动一次，世界比想象中温暖。" },
+            "RRMA": { title: "深海里的信", desc: "你的爱意沉没在海底，等待一个愿意潜水的人来读。", match: "IREA (纵火犯)", advice: "别让等待变成遗憾。" },
+            "RPES": { title: "避风港", desc: "你不会说甜言蜜语,但你的怀抱永远向疲惫的ta敞开。", match: "IRMA (诱惑者)", advice: "别忘了表达自己的需求。" },
+            "RPEA": { title: "漫游者", desc: "顺顺其自然是你的恋爱信条，不强求，不执念。", match: "IPMS (操盘手)", advice: "试着去用力争取一次。" },
+            "RPMS": { title: "清醒者", desc: "你看穿了所有的套路，所以很难再被廉价的真心感动。", match: "IREA (纵火犯)", advice: "偶尔允许自己“糊涂”一次，爱情本就是盲目的。" },
+            "RPMA": { title: "石头", desc: "外壳是逻辑与现实，内里是什么呢？", match: "IRES (纯爱战神)", advice: "试着早一点敞开心扉。" }
         };
 
         let currentQuestion = 0;
@@ -413,13 +552,13 @@
         function selectOption(index) {
             answers[currentQuestion] = index;
             recalculateScores();
-            loadQuestion();
+            setTimeout(nextQuestion, 200); // 添加微小延迟提升体验
         }
 
         function selectScale(value) {
             answers[currentQuestion] = value;
             recalculateScores();
-            loadQuestion();
+            setTimeout(nextQuestion, 200);
         }
 
         function recalculateScores() {
@@ -461,7 +600,7 @@
             const btnNext = document.getElementById('btn-next');
             
             if (isLast) {
-                btnNext.textContent = '提交测试';
+                btnNext.textContent = '生成标签';
                 btnNext.onclick = submitTest;
             } else {
                 btnNext.textContent = '下一题';
@@ -477,6 +616,8 @@
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 loadQuestion();
+            } else if (currentQuestion === questions.length - 1) {
+                submitTest();
             }
         }
 
@@ -485,6 +626,48 @@
                 currentQuestion--;
                 loadQuestion();
             }
+        }
+
+        // 核心更新：渲染双向动态伸展条
+        function updateAxis(leftId, rightId, valLeftId, valRightId, leftScore, rightScore) {
+            // 避免除以0
+            const total = Math.max(leftScore + rightScore, 1);
+            // 计算各项占比百分比 (四舍五入)
+            const leftPct = Math.round((leftScore / total) * 100);
+            const rightPct = 100 - leftPct;
+
+            // 更新文本百分比
+            const valLeftEl = document.getElementById(valLeftId);
+            const valRightEl = document.getElementById(valRightId);
+            valLeftEl.textContent = leftPct + '%';
+            valRightEl.textContent = rightPct + '%';
+
+            const leftEl = document.getElementById(leftId);
+            const rightEl = document.getElementById(rightId);
+
+            // 重置宽度触发动画
+            leftEl.style.width = '0%';
+            rightEl.style.width = '0%';
+
+            // 延迟一点应用真实宽度以实现生长动画
+            setTimeout(() => {
+                // 最大宽度为容器的一半 (即 50%)。所以将百分比除以2。
+                leftEl.style.width = (leftPct / 2) + '%';
+                rightEl.style.width = (rightPct / 2) + '%';
+
+                // 视觉高亮主导优势方
+                if (leftPct >= rightPct) {
+                    leftEl.style.background = 'linear-gradient(to left, #ff4d94, #ff80bf)';
+                    rightEl.style.background = '#d9d9d9'; // 弱侧置灰
+                    valLeftEl.style.color = '#ff4d94';
+                    valRightEl.style.color = '#999';
+                } else {
+                    rightEl.style.background = 'linear-gradient(to right, #ff4d94, #ff80bf)';
+                    leftEl.style.background = '#d9d9d9'; // 弱侧置灰
+                    valRightEl.style.color = '#ff4d94';
+                    valLeftEl.style.color = '#999';
+                }
+            }, 50);
         }
 
         function submitTest() {
@@ -502,11 +685,9 @@
             
             const personality = I_R + R_P + E_M + S_A;
             
-            // --- 这里是新增的逻辑：从字典中获取数据 ---
-            // 如果计算出的组合意外不在字典里（防错机制），给个默认值
             const finalData = resultData[personality] || {
                 title: "神秘探索者",
-                desc: "你的恋爱人格太独特，超出了系统的计算范围...",
+                desc: "你的恋爱人格太独特，超出了系统的常规计算范围...",
                 match: "一切随缘",
                 advice: "做最真实的自己就好。"
             };
@@ -514,31 +695,17 @@
             document.getElementById('quiz').style.display = 'none';
             document.getElementById('result').style.display = 'block';
             
-            // 把字典里的文案填入 HTML
             document.getElementById('personality-code').textContent = personality;
             document.getElementById('personality-tag').textContent = finalData.title;
             document.getElementById('personality-desc').textContent = `“${finalData.desc}”`;
             document.getElementById('personality-match').textContent = finalData.match;
             document.getElementById('personality-advice').textContent = finalData.advice;
-            // --- 新增逻辑结束 ---
             
-            document.getElementById('ir-label').textContent = I_R === 'I' ? '主动发起者' : '被动回应者';
-            document.getElementById('rp-label').textContent = R_P === 'R' ? '浪漫理想主义' : '现实实用主义';
-            document.getElementById('em-label').textContent = E_M === 'E' ? '情感外露' : '情感内敛';
-            document.getElementById('sa-label').textContent = S_A === 'S' ? '稳定守护' : '冒险探索';
-            
-            // 进度条百分比
-            const totalIR = Math.max(scores.I + scores.R, 1);
-            document.getElementById('ir-bar').style.width = (scores.I / totalIR * 100) + '%';
-            
-            const totalRP = Math.max(scores.R_total + scores.P, 1);
-            document.getElementById('rp-bar').style.width = (scores.R_total / totalRP * 100) + '%';
-            
-            const totalEM = Math.max(scores.E + scores.M, 1);
-            document.getElementById('em-bar').style.width = (scores.E / totalEM * 100) + '%';
-            
-            const totalSA = Math.max(scores.S + scores.A, 1);
-            document.getElementById('sa-bar').style.width = (scores.S / totalSA * 100) + '%';
+            // 渲染四个维度的双向条
+            updateAxis('ir-left', 'ir-right', 'ir-val-l', 'ir-val-r', scores.I, scores.R);
+            updateAxis('rp-left', 'rp-right', 'rp-val-l', 'rp-val-r', scores.R_total, scores.P);
+            updateAxis('em-left', 'em-right', 'em-val-l', 'em-val-r', scores.E, scores.M);
+            updateAxis('sa-left', 'sa-right', 'sa-val-l', 'sa-val-r', scores.S, scores.A);
         }
 
         function restartTest() {
@@ -546,7 +713,6 @@
             document.getElementById('home').style.display = 'block';
         }
 
-        // 键盘支持
         document.addEventListener('keydown', function(e) {
             if (document.getElementById('quiz').style.display === 'block') {
                 if (e.key === 'ArrowRight' || e.key === ' ') nextQuestion();
