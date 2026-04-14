@@ -234,9 +234,9 @@
         .personality-tag {
             font-size: 42px;
             font-weight: 700;
-            color: var(--primary);
             margin: 15px 0;
             letter-spacing: 2px;
+            transition: color 0.6s ease;
         }
         
         .dimension {
@@ -244,7 +244,6 @@
             text-align: left;
         }
         
-        /* 优化的维度条设计 */
         .dim-labels {
             display: flex;
             justify-content: space-between;
@@ -290,18 +289,18 @@
             position: absolute;
             top: 0;
             height: 100%;
-            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* 带有微弹性的动画 */
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             border-radius: 8px;
         }
         
         .left-bar {
-            right: 50%; /* 锚定在中间，向左伸展 */
+            right: 50%;
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
         }
         
         .right-bar {
-            left: 50%; /* 锚定在中间，向右伸展 */
+            left: 50%;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
@@ -312,6 +311,12 @@
             color: white;
             padding: 14px 45px;
             font-weight: 700;
+            transition: all 0.4s ease;
+        }
+
+        /* 结果页个性化颜色支持 */
+        #result-info-box {
+            transition: all 0.6s ease;
         }
     </style>
 </head>
@@ -324,8 +329,8 @@
                     <span class="badge">💖 16型恋爱人格</span>
                 </div>
                 <h1 class="main-title">LOVETI</h1>
-                <h2 class="sub-title">你的专属「恋爱人格标签」</h2>
-                <p class="desc-text">揭开你在亲密关系中的真实底色<br>透过 12 个情境，遇见更懂爱的自己</p>
+                <h2 class="sub-title">你的「恋爱人格标签」</h2>
+                <p class="desc-text">揭开你在亲密关系中的真实底色<br>透过最多 19 个情境，遇见更懂爱的自己</p>
                 <button onclick="startTest()" class="btn-start">开始测试 🚀</button>
             </div>
         </div>
@@ -343,7 +348,7 @@
             </div>
 
             <div class="question-container">
-                <div class="question-number">第 <span id="q-number">1</span> 题 / 12 题</div>
+                <div class="question-number">第 <span id="q-number">1</span> 题 / <span id="total-questions">18</span> 题</div>
                 <div id="question-text" class="question-text"></div>
                 <div id="options" class="options"></div>
             </div>
@@ -360,7 +365,7 @@
             <div id="personality-tag" class="personality-tag"></div>
             <p id="personality-desc" style="font-size: 16px; color: #555; margin-bottom: 25px; line-height: 1.6; font-style: italic;"></p>
             
-            <div style="background: #fff5fa; padding: 20px; border-radius: 16px; text-align: left; margin-bottom: 35px; border: 1px solid #ffe6f0;">
+            <div id="result-info-box" style="background: #fff5fa; padding: 20px; border-radius: 16px; text-align: left; margin-bottom: 35px; border: 1px solid #ffe6f0;">
                 <p style="margin-bottom: 12px; font-size: 15px;"><strong>✨ 灵魂伴侣：</strong><span id="personality-match" style="color: #ff4d94; font-weight: 500;"></span></p>
                 <p style="font-size: 15px; line-height: 1.5;"><strong>💡 恋爱建议：</strong><span id="personality-advice"></span></p>
             </div>
@@ -423,100 +428,221 @@
 
     <script>
         const questions = [
+            // 1. 单身心态（通用开场，降低敏感度）
+            { 
+                q: "当周围的朋友都成双成对，而你长期单身时，你最真实的内心感受是：", 
+                options: [
+                    { text: "感到焦虑或孤独，怀疑是不是自己不够好", score: {R:2, E:1} },
+                    { text: "虽然偶尔羡慕，但很享受当下的自由和个人成长", score: {A:2, S:1} },
+                    { text: "完全没感觉，觉得恋爱不是生活的必需品", score: {P:2, M:1} },
+                    { text: "会主动去扩展社交圈，寻找结束单身的机会", score: {I:2, E:1} }
+                ]
+            },
+            // 2. 过去反思（帮助用户进入反思状态）
+            { 
+                q: "对于“前任”或过去未果的情感经历，你现在的态度更接近：", 
+                options: [
+                    { text: "偶尔会想起，甚至带有一丝遗憾或滤镜", score: {R:2, M:1} },
+                    { text: "是一段有意义的经历，让我更清楚自己想要什么", score: {S:2, P:1} },
+                    { text: "已经完全放下，提起来就像在听别人的故事", score: {P:2} },
+                    { text: "反思当时的不足，并在现在的社交中刻意避开同类人", score: {M:1, S:1} }
+                ]
+            },
+            // 3. 恋爱错觉（过渡到浪漫认知）
+            { 
+                q: "每个人心里都有一道防线，你觉得自己在以下哪种情境下，最容易对一个人“破防”？", 
+                options: [
+                    { text: "在某个深夜情绪崩塌时，ta刚好递过来的一句安慰", score: {R:2, E:1} },
+                    { text: "看到对方在某个专业领域闪闪发光时", score: {P:1, A:1} },
+                    { text: "ta润物细无声的照顾，那种即便我不开口，ta也能看穿我需求的默契与安稳。", score: {S:2, R:1} },
+                    { text: "双方在某个兴趣点产生强烈共鸣时", score: {E:1, A:1} }
+                ]
+            },
+            // 4. 浪漫信念量表（早期直接测量RP维度，科学分布量表）
+            { q: "我相信一见钟情，爱情应该像电影或小说一样充满心动和仪式感。", type: "scale", dimension: "RP" },
+            // 5. 初遇吸引行为（自然过渡到主动/被动）
             { q: "一天上午，你在一节无聊的公共课上看到一名很有眼缘的同学，你最可能怎么做？", options: [
                 { text: "下课找个自然理由搭话（比如问作业/课件）", score: {I:2, E:2} },
                 { text: "故意多出现几次，让对方“熟悉你的存在”", score: {I:1, E:1} },
                 { text: "默默观察，等一个“刚好合理”的机会", score: {R:1, M:1} },
                 { text: "低头当作没看见，继续自己的事", score: {R:2, M:2} }
             ]},
+            // 6. 早期互动回应（微信场景，测试E/M）
             { q: "假如你加上了那位你想增进了解的同学的微信，你发现对方发了一条比较有情绪的朋友圈，你会：", options: [
                 { text: "直接私聊关心", score: {I:2, E:2} },
                 { text: "点个赞，或者评论一句", score: {I:1, E:1} },
                 { text: "看了很多遍，但什么都不做", score: {R:1, M:1} },
                 { text: "等对方来找你聊", score: {R:2, M:2} }
             ]},
-            { q: "和一个人暧昧了一段时间，对方总是发一些暧昧的消息但没明确表态，你会：", options: [
-                { text: "主动推进，把关系说清楚", score: {E:1, I:1} },
-                { text: "继续用同样暧昧的方式回应，享受这种模糊的感觉", score: {M:1, A:1} },
-                { text: "冷静分析：对方条件如何？值不值得投入？", score: {P:1, S:1} },
-                { text: "慢慢减少联系，看对方会不会主动追问", score: {R:1, M:1} }
+            // 7. 好感回应（测试初始态度）
+            { 
+                q: "面对异性表现出的好感（如频繁找你聊天），如果你并不确定是否喜欢对方，你会：", 
+                options: [
+                    { text: "礼貌但冷淡，迅速拉开距离防止对方误解", score: {M:2, P:1} },
+                    { text: "觉得可以先接触看看，享受被关注的感觉", score: {A:1, R:1} },
+                    { text: "感到很有压力，甚至想躲避这种互动", score: {M:2, S:1} },
+                    { text: "直接坦白自己的想法，不浪费双方时间", score: {I:1, E:2} }
+                ]
+            },
+            // 8. 暧昧阶段（测试模糊关系处理）
+            { q: "当一段关系长期停留在‘友达以上，恋人未满’的灰色地带，你通常会如何处理这种不确定性？", options: [
+                { text: "与其等待对方表态，不如我来主导结局", score: {E:1, I:1} },
+                { text: "顺其自然，这种不用负责任的浪漫也是生活的一种馈赠。", score: {M:1, A:1} },
+                { text: "开始评估沉没成本，如果对方只是在消磨时间，我会及时止损。", score: {P:1, S:1} },
+                { text: "慢慢减少联系，如果等不到明确的答案，我会安静地退回安全区。", score: {R:1, M:1} }
             ]},
+            // 9. 回复变慢（测试情感反应强度）
             { q: "假如那个一直和你很聊得来的ta回复消息开始变慢，你的第一反应是", options: [
                 { text: "ta可能只是这两天比较忙，我要主动找话题维持节奏", score: {R:2, S:2} },
                 { text: "也开始降低回复频率（关系要对等 凭啥我非得那么主动）", score: {P:1, A:1} },
                 { text: "会想很多 难受极了（完了被钓了 ta是不是嫌我烦了 我可能比较无趣）", score: {R:1, A:1} },
                 { text: "直接去做别的事，不太受影响", score: {P:2, S:2} }
             ]},
-            { q: "我相信一见钟情，爱情应该像电影或小说一样充满心动和仪式感。", type: "scale", dimension: "RP" },
+            // 10. 心动推进方式（测试I/R + E/M）
             { q: "你对一个喜欢的人心动了，你最倾向的推进方式是：", options: [
                 { text: "主动约对方出来，找机会直接表白", score: {I:1, E:1} },
                 { text: "等对方先表现出明显兴趣，再慢慢回应发展", score: {R:1} },
                 { text: "先成为很好的朋友，自然而然走到一起", score: {S:1, P:1} },
                 { text: "享受当下暧昧，多认识几个有趣的人，不急于固定", score: {A:1} }
             ]},
-            { q: "和恋人发生争执，冷战了两天，你最可能的反应是：", options: [
-                { text: "主动发消息道歉或解释，想尽快和好", score: {E:1, S:1, I:1} },
-                { text: "保持沉默，等对方先来找我", score: {M:1, R:1} },
-                { text: "出去和朋友玩/旅行，冷静一下再回来", score: {A:1} },
-                { text: "认真反思问题，列出解决方案后再沟通", score: {P:1, S:1} }
-            ]},
-            { q: "在恋爱中，我更享受稳定的长期陪伴，而不是不断的新鲜刺激和冒险。", type: "scale", dimension: "SA" },
+            // 11. 主动性量表（中段直接测量IR维度，科学分布）
+            { q: "我喜欢在恋爱中主动掌握节奏，率先表达心意、规划未来。", type: "scale", dimension: "IR" },
+            // 12. 第一次约会（从暧昧进入正式关系）
             { q: "第一次正式约会，你最希望是怎样的体验？", options: [
                 { text: "精心准备的浪漫晚餐 + 看日落/烟花，充满仪式感", score: {R:1, E:1} },
                 { text: "简单舒服的咖啡或散步，聊聊三观和生活规划", score: {P:1, S:1} },
                 { text: "一起尝试新奇活动，比如密室逃脱或夜市探店", score: {A:1} },
                 { text: "对方安排一切，我跟着感觉走就好", score: {R:1, M:1} }
             ]},
-            { q: "看到恋人和异性好友聊天很开心，你内心第一反应是：", options: [
-                { text: "直接走过去加入，或事后开玩笑表达自己的小醋意", score: {E:1} },
-                { text: "心里有点不舒服，但选择默默观察，不说出来", score: {M:1} },
-                { text: "觉得很正常，信任对方，专注于自己的事", score: {P:1, S:1} },
-                { text: "反而觉得有趣，甚至鼓励对方多社交", score: {A:1} }
+            // 13. 关系中的支持（测试E/M + P/S）
+            { 
+                q: "当你的恋人遇到挫折（如考试失利或工作受委屈）向你倾诉时，你通常会：", 
+                options: [
+                    { text: "陪ta一起吐槽，用热烈的情绪给予支持", score: {E:2, I:1} },
+                    { text: "客观分析原因，帮ta出谋划策提供方案", score: {P:2, S:1} },
+                    { text: "静静地听着并给ta一个拥抱，感受ta的情绪", score: {M:1, R:1} },
+                    { text: "带ta去吃大餐或玩游戏，用快乐转移注意力", score: {A:1} }
+                ]
+            },
+            // 14. 私人空间（测试S/A + E/M）
+            { q: "关于“恋爱中的私人空间”，你的真实看法是：", options: [
+                { text: "希望能共享大部分生活，不想对ta有任何秘密", score: {E:2, S:1} },
+                { text: "要有各自独立的时间和圈子，距离产生美", score: {A:2, M:1} },
+                { text: "虽然有自己的空间，但对方想知道时会坦诚说明", score: {P:1, S:1} },
+                { text: "看对方需要，如果ta粘我，我可以多陪陪ta", score: {R:2} }
             ]},
-            { q: "我喜欢在恋爱中主动掌握节奏，率先表达心意、规划未来。", type: "scale", dimension: "IR" },
-            { q: "如果你想象理想的恋爱关系，会更接近哪一种？", options: [
-                { text: "像偶像剧一样，每天都有小惊喜，永远保持心动", score: {R:1, E:1} },
-                { text: "平淡但可靠的日常生活，互相支持、一起变老", score: {S:1, P:1} },
-                { text: "可以有短暂分离或各自探索，但最终回到彼此身边", score: {A:1} },
-                { text: "一起尝试各种新体验、旅行、挑战，永远不无聊", score: {A:1, R:1} }
+            // 15. 争执冷战（测试冲突处理，S/A + E/M）
+            { q: "和恋人发生争执，冷战了两天，你最可能的反应是：", options: [
+                { text: "主动发消息道歉或解释，想尽快和好", score: {E:1, S:1, I:1} },
+                { text: "保持沉默，等对方先来找我", score: {M:1, R:1} },
+                { text: "出去和朋友玩/旅行，冷静一下再回来", score: {A:1} },
+                { text: "认真反思问题，列出解决方案后再沟通", score: {P:1, S:1} }
+            ]},
+            // 16. 伴侣与异性互动（测试信任与情感反应）
+            { q: "在一个学校活动上，你远远看到恋人正和一位你并不熟悉的异性/同性/非二元性别相谈甚欢，笑得很灿烂。那一刻，你脑海中闪过的第一个念头是：", options: [
+                { text: "顺势走过去自然加入，并大方宣示主权。", score: {E:1} },
+                { text: "“ta平时跟我说话好像都没笑得这么开心……”", score: {M:1} },
+                { text: "感到欣慰并继续忙自己的社交，充分尊重对方的独立空间。", score: {P:1, S:1} },
+                { text: "“ta散发魅力的时候真迷人。”", score: {A:1} }
+            ]},
+            // 17. 稳定 vs 冒险量表（后段测量SA维度）
+            { q: "在恋爱中，我更享受稳定的长期陪伴，而不是不断的新鲜刺激和冒险。", type: "scale", dimension: "SA" },
+            // 18. 理想关系展望（收尾，总结性问题）
+            { q: "如果要把你理想中的‘长久爱情’拍成一部电影，它的电影海报里会出现什么？", options: [
+                { text: "漫天烟火下的拥抱", score: {R:1, E:1} },
+                { text: "平淡但可靠的日常生活", score: {S:1, P:1} },
+                { text: "两条偶尔交汇的“平行线”，冷静踏实", score: {A:1} },
+                { text: "“两张飞往未知的单程机票", score: {A:1, R:1} }
             ]}
         ];
 
+        // 16种人格对应独特主题色（浪漫柔和渐变系）
+        const personalityColors = {
+    // --- 粉色调 (代表热情、浪漫、主动性强) ---
+    "IRES": "#FF4D94", // 纯爱战神 - 经典热烈粉
+    "IREA": "#FF75A8", // 纵火犯 - 亮眼珊瑚粉
+    "IRMS": "#FF80BF", // 守卫 - 温柔芭比粉
+    "IRMA": "#E63E62", // 诱惑者 - 魅惑玫红
+
+    // --- 紫色调 (代表神秘、感性、情感深沉) ---
+    "RRMS": "#A18CD1", // 孤傲的月亮 - 梦幻淡紫
+    "RRMA": "#6A11CB", // 深海里的信 - 深邃葡萄紫
+    "RPES": "#D04ED6", // 避风港 - 浪漫薰衣草紫
+    "RRES": "#8E44AD", // 透明雨滴 - 忧郁深紫
+
+    // --- 蓝色调 (代表理智、稳定、逻辑性) ---
+    "IPMS": "#2193B0", // 操盘手 - 沉静湖蓝
+    "IPMA": "#2C3E50", // 猎手 - 深沉靛蓝
+    "IPES": "#00B09B", // 建筑师 - 清新青蓝
+    "IPEA": "#3498DB", // 冒险家 - 活力天蓝
+
+    // --- 灰色/大地调 (代表清醒、冷静、独立) ---
+    "RPMS": "#7F8C8D", // 清醒者 - 标准冷灰
+    "RPMA": "#34495E", // 石头 - 坚硬岩石灰
+    "RPEA": "#95A5A6", // 漫游者 - 自由烟雾灰
+    "RREA": "#BDC3C7", // 自由的人 - 明亮银灰
+};
+
         const resultData = {
-            "IRES": { title: "纯爱战神", desc: "在这个快节奏时代，你的深情是唯一的硬通货。你从不掩饰自己的爱意，一旦认定便孤注一掷。", match: "RRMS (孤傲的月亮)", advice: "偶尔收敛一点光芒，别把对方灼伤了。" },
-            "IREA": { title: "纵火犯", desc: "你负责制造火花，而对方负责在这场大火里迷失。", match: "RPMS (清醒者)", advice: "在平淡中维持温度。" },
-            "IRMS": { title: "守卫", desc: "你的浪漫不声不响，却能在最细节的地方给足安全感。", match: "IPEA (冒险家)", advice: "爱要大声说出来。" },
-            "IRMA": { title: "诱惑者", desc: "你像一杯烈酒，入口温和，后劲却让人欲罢不能。", match: "RRES (透明雨滴)", advice: "暴露一些真实的脆弱，更迷人。" },
-            "IPES": { title: "建筑师", desc: "比起虚无的誓言，你更想和对方一起供房、养猫、变老。", match: "RRMA (深海里的信)", advice: "生活需要浪漫的点缀。" },
-            "IPEA": { title: "冒险家", desc: "爱是游乐场，如果你不敢上过山车，那我们就此别过。", match: "IRMS (守卫)", advice: "在追求新鲜感的同时，也要留意身边默默陪伴的人。" },
-            "IPMS": { title: "操盘手", desc: "理智是你的底色，你从不做亏本的感情投资。", match: "RPEA (漫游者)", advice: "有时候我们需要一点盲目的冲动。" },
-            "IPMA": { title: "猎手", desc: "你主动是因为你胜券在握，这场博弈的节奏由你掌控。", match: "RPMA (石头)", advice: "不妨卸下防备。" },
-            "RRES": { title: "透明雨滴", desc: "你表现得有多不在意，内心就有多渴望被对方打伞接住。", match: "IPMA (猎手)", advice: "主动伸出手，想要的人才不会走散。" },
-            "RREA": { title: "自由的人", desc: "你渴望浪漫的共振，但随时准备飞回自己的岛屿。", match: "IPES (建筑师)", advice: "给对方多一点安全感，降落也是一种幸福。" },
-            "RRMS": { title: "孤傲的月亮", desc: "你从不奔向任何人，除非对方本身就是引力。", match: "IRES (纯爱战神)", advice: "偶尔主动一次，世界比想象中温暖。" },
-            "RRMA": { title: "深海里的信", desc: "你的爱意沉没在海底，等待一个愿意潜水的人来读。", match: "IREA (纵火犯)", advice: "别让等待变成遗憾。" },
-            "RPES": { title: "避风港", desc: "你不会说甜言蜜语,但你的怀抱永远向疲惫的ta敞开。", match: "IRMA (诱惑者)", advice: "别忘了表达自己的需求。" },
-            "RPEA": { title: "漫游者", desc: "顺顺其自然是你的恋爱信条，不强求，不执念。", match: "IPMS (操盘手)", advice: "试着去用力争取一次。" },
-            "RPMS": { title: "清醒者", desc: "你看穿了所有的套路，所以很难再被廉价的真心感动。", match: "IREA (纵火犯)", advice: "偶尔允许自己“糊涂”一次，爱情本就是盲目的。" },
-            "RPMA": { title: "石头", desc: "外壳是逻辑与现实，内里是什么呢？", match: "IRES (纯爱战神)", advice: "试着早一点敞开心扉。" }
+            "IRES": { title: "纯爱战神",color: "linear-gradient(135deg, #ff4d94, #ff80bf)", desc: "在这个快节奏时代，你的深情是唯一的硬通货。你从不掩饰自己的爱意，一旦认定便孤注一掷。", match: "RRMS (孤傲的月亮)", advice: "偶尔收敛一点光芒，别把对方灼伤了。" },
+            "IREA": { title: "纵火犯",color: "linear-gradient(135deg, #ff4e50, #f9d423)", desc: "你负责制造火花，而对方负责在这场大火里迷失。", match: "RPMS (清醒者)", advice: "在平淡中维持温度。" },
+            "IRMS": { title: "守卫", color: "linear-gradient(135deg, #2193b0, #6dd5ed)",desc: "你的浪漫不声不响，却能在最细节的地方给足安全感。", match: "IPEA (冒险家)", advice: "爱要大声说出来。" },
+            "IRMA": { title: "诱惑者",color: "linear-gradient(135deg, #2c3e50, #4ca1af)", desc: "你像一杯烈酒，入口温和，后劲却让人欲罢不能。", match: "RRES (透明雨滴)", advice: "暴露一些真实的脆弱，更迷人。" },
+            "IPES": { title: "建筑师",color: "linear-gradient(135deg, #6a11cb, #2575fc)", desc: "比起虚无的誓言，你更想和对方一起供房、养猫、变老。", match: "RRMA (深海里的信)", advice: "生活需要浪漫的点缀。" },
+            "IPEA": { title: "冒险家",color: "linear-gradient(135deg, #1e3c72, #2a5298)", desc: "爱是游乐场，如果你不敢上过山车，那我们就此别过。", match: "IRMS (守卫)", advice: "在追求新鲜感的同时，也要留意身边默默陪伴的人。" },
+            "IPMS": { title: "操盘手",color: "linear-gradient(135deg, #11998e, #38ef7d)", desc: "理智是你的底色，你从不做亏本的感情投资。", match: "RPEA (漫游者)", advice: "有时候我们需要一点盲目的冲动。" },
+            "IPMA": { title: "猎手", color: "linear-gradient(135deg, #bdc3c7, #2c3e50)",desc: "你主动是因为你胜券在握，这场博弈的节奏由你掌控。", match: "RPMA (石头)", advice: "不妨卸下防备。" },
+            "RRES": { title: "透明雨滴",color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", desc: "你表现得有多不在意，内心就有多渴望被对方打伞接住。", match: "IPMA (猎手)", advice: "主动伸出手，想要的人才不会走散。" },
+            "RREA": { title: "自由的人",color: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", desc: "你渴望浪漫的共振，但随时准备飞回自己的岛屿。", match: "IPES (建筑师)", advice: "给对方多一点安全感，降落也是一种幸福。" },
+            "RRMS": { title: "孤傲的月亮",color: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)", desc: "你从不奔向任何人，除非对方本身就是引力。", match: "IRES (纯爱战神)", advice: "偶尔主动一次，世界比想象中温暖。" },
+            "RRMA": { title: "深海里的信",color: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)", desc: "你的爱意沉没在海底，等待一个愿意潜水的人来读。", match: "IREA (纵火犯)", advice: "别让等待变成遗憾。" },
+            "RPES": { title: "避风港",color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", desc: "你不会说甜言蜜语,但你的怀抱永远向疲惫的ta敞开。", match: "IRMA (诱惑者)", advice: "别忘了表达自己的需求。" },
+            "RPEA": { title: "漫游者",color: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)", desc: "顺顺其自然是你的恋爱信条，不强求，不执念。", match: "IPMS (操盘手)", advice: "试着去用力争取一次。" },
+            "RPMS": { title: "清醒者",color: "linear-gradient(135deg, #757f9a 0%, #d7dde8 100%)", desc: "你看穿了所有的套路，所以很难再被廉价的真心感动。", match: "IREA (纵火犯)", advice: "偶尔允许自己“糊涂”一次，爱情本就是盲目的。" },
+            "RPMA": { title: "石头",color: "linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)", desc: "外壳是逻辑与现实，内里是什么呢？", match: "IRES (纯爱战神)", advice: "试着早一点敞开心扉。" }
         };
 
         let currentQuestion = 0;
-        let answers = new Array(questions.length).fill(null);
+        let answers = [];
         let scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
+        let hasBranchInserted = false;
+        let baseQuestionCount = questions.length; // 基础18题
 
         function startTest() {
             document.getElementById('home').style.display = 'none';
             document.getElementById('quiz').style.display = 'block';
             currentQuestion = 0;
-            answers.fill(null);
+            answers = new Array(questions.length).fill(null);
             scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
+            hasBranchInserted = false;
             loadQuestion();
         }
 
         function loadQuestion() {
+            // 小分支逻辑
+            if (currentQuestion === 10 && !hasBranchInserted) {
+                recalculateScores();
+                if (scores.R_total > scores.P + 3) {
+                    const branchQ = {
+                        q: "【小分支】对方突然送你一束花，你最真实的反应是：",
+                        options: [
+                            { text: "立刻拍照发朋友圈，觉得超级浪漫", score: {R:3, E:1} },
+                            { text: "很开心，但会想这花要怎么养才不会枯萎", score: {P:2, R:1} },
+                            { text: "感动但有点尴尬，不知道该怎么回应", score: {M:2, R:1} },
+                            { text: "觉得花很美，但更期待一起去吃顿饭聊聊天", score: {S:2, A:1} }
+                        ]
+                    };
+                    questions.splice(10, 0, branchQ);
+                    answers.splice(10, 0, null);
+                    hasBranchInserted = true;
+                }
+            }
+
             const q = questions[currentQuestion];
+            const totalQ = hasBranchInserted ? baseQuestionCount + 1 : baseQuestionCount;
+
             document.getElementById('q-number').textContent = currentQuestion + 1;
+            document.getElementById('total-questions').textContent = totalQ;
             document.getElementById('question-text').textContent = q.q;
             
             const optionsDiv = document.getElementById('options');
@@ -529,7 +655,7 @@
                             <div onclick="selectScale(${n})" 
                                  class="option scale-option ${answers[currentQuestion] === n ? 'selected' : ''}" 
                                  style="text-align:center;">
-                                ${n} ${n===1 ? '（非常不同意）' : n===5 ? '（非常同意）' : ''}
+                                ${n} ${q.labels ? (n===1 ? `（${q.labels[1]}）` : n===5 ? `（${q.labels[5]}）` : '') : (n===1 ? '（非常不同意）' : n===5 ? '（非常同意）' : '')}
                             </div>
                         `).join('')}
                     </div>
@@ -552,7 +678,7 @@
         function selectOption(index) {
             answers[currentQuestion] = index;
             recalculateScores();
-            setTimeout(nextQuestion, 200); // 添加微小延迟提升体验
+            setTimeout(nextQuestion, 200);
         }
 
         function selectScale(value) {
@@ -563,10 +689,8 @@
 
         function recalculateScores() {
             scores = { I:0, R:0, R_total:0, P:0, E:0, M:0, S:0, A:0 };
-            
             questions.forEach((q, i) => {
                 if (answers[i] === null) return;
-                
                 if (q.type === "scale") {
                     const val = answers[i];
                     if (q.dimension === "RP") {
@@ -589,15 +713,16 @@
         }
 
         function updateProgress() {
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const total = hasBranchInserted ? baseQuestionCount + 1 : baseQuestionCount;
+            const progress = ((currentQuestion + 1) / total) * 100;
             document.getElementById('progress').style.width = progress + '%';
         }
 
         function updateButtons() {
             document.getElementById('btn-prev').style.display = currentQuestion === 0 ? 'none' : 'block';
-            
-            const isLast = currentQuestion === questions.length - 1;
             const btnNext = document.getElementById('btn-next');
+            const total = hasBranchInserted ? baseQuestionCount + 1 : baseQuestionCount;
+            const isLast = currentQuestion === total - 1;
             
             if (isLast) {
                 btnNext.textContent = '生成标签';
@@ -616,7 +741,7 @@
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 loadQuestion();
-            } else if (currentQuestion === questions.length - 1) {
+            } else {
                 submitTest();
             }
         }
@@ -628,44 +753,34 @@
             }
         }
 
-        // 核心更新：渲染双向动态伸展条
         function updateAxis(leftId, rightId, valLeftId, valRightId, leftScore, rightScore) {
-            // 避免除以0
             const total = Math.max(leftScore + rightScore, 1);
-            // 计算各项占比百分比 (四舍五入)
             const leftPct = Math.round((leftScore / total) * 100);
             const rightPct = 100 - leftPct;
 
-            // 更新文本百分比
-            const valLeftEl = document.getElementById(valLeftId);
-            const valRightEl = document.getElementById(valRightId);
-            valLeftEl.textContent = leftPct + '%';
-            valRightEl.textContent = rightPct + '%';
+            document.getElementById(valLeftId).textContent = leftPct + '%';
+            document.getElementById(valRightId).textContent = rightPct + '%';
 
             const leftEl = document.getElementById(leftId);
             const rightEl = document.getElementById(rightId);
 
-            // 重置宽度触发动画
             leftEl.style.width = '0%';
             rightEl.style.width = '0%';
 
-            // 延迟一点应用真实宽度以实现生长动画
             setTimeout(() => {
-                // 最大宽度为容器的一半 (即 50%)。所以将百分比除以2。
                 leftEl.style.width = (leftPct / 2) + '%';
                 rightEl.style.width = (rightPct / 2) + '%';
 
-                // 视觉高亮主导优势方
                 if (leftPct >= rightPct) {
                     leftEl.style.background = 'linear-gradient(to left, #ff4d94, #ff80bf)';
-                    rightEl.style.background = '#d9d9d9'; // 弱侧置灰
-                    valLeftEl.style.color = '#ff4d94';
-                    valRightEl.style.color = '#999';
+                    rightEl.style.background = '#d9d9d9';
+                    document.getElementById(valLeftId).style.color = '#ff4d94';
+                    document.getElementById(valRightId).style.color = '#999';
                 } else {
                     rightEl.style.background = 'linear-gradient(to right, #ff4d94, #ff80bf)';
-                    leftEl.style.background = '#d9d9d9'; // 弱侧置灰
-                    valRightEl.style.color = '#ff4d94';
-                    valLeftEl.style.color = '#999';
+                    leftEl.style.background = '#d9d9d9';
+                    document.getElementById(valRightId).style.color = '#ff4d94';
+                    document.getElementById(valLeftId).style.color = '#999';
                 }
             }, 50);
         }
@@ -691,7 +806,22 @@
                 match: "一切随缘",
                 advice: "做最真实的自己就好。"
             };
-            
+            const themeColor = finalData.color || "linear-gradient(135deg, #ff4d94, #ff80bf)"; // 默认粉色
+    
+    // 1. 修改结果页面的大标题和人格标签颜色
+            document.getElementById('personality-tag').style.color = 'transparent';
+            document.getElementById('personality-tag').style.backgroundImage = themeColor;
+            document.getElementById('personality-tag').style.webkitBackgroundClip = 'text';
+            document.getElementById('personality-tag').style.backgroundClip = 'text';
+
+    // 2. 修改“重新测试”按钮的背景色
+
+
+    // 3. 修改建议框的边框和灵魂伴侣名字颜色
+            const adviceBox = document.querySelector('#result > div[style*="background: #fff5fa"]');
+            adviceBox.style.borderColor = '#eee'; // 重置一下
+            document.getElementById('personality-match').style.color = '#333'; // 先变深，稍后取渐变主色
+            // 显示结果页
             document.getElementById('quiz').style.display = 'none';
             document.getElementById('result').style.display = 'block';
             
@@ -700,8 +830,26 @@
             document.getElementById('personality-desc').textContent = `“${finalData.desc}”`;
             document.getElementById('personality-match').textContent = finalData.match;
             document.getElementById('personality-advice').textContent = finalData.advice;
+
+            // ============ 新增：不同人格不同主题色 ============
+            const accentColor = personalityColors[personality] || '#ff4d94';
             
-            // 渲染四个维度的双向条
+            // 1. 人格标签颜色
+            document.getElementById('personality-tag').style.color = accentColor;
+            
+            // 2. 重新测定按钮颜色
+            const restartBtn = document.querySelector('.restart');
+            restartBtn.style.background = `#ff80bf`;
+            
+            // 3. 灵魂伴侣建议框颜色
+            const infoBox = document.getElementById('result-info-box');
+            infoBox.style.borderColor = accentColor;
+            infoBox.style.background = `color-mix(in srgb, ${accentColor} 8%, #fff5fa)`;
+            
+            // 4. 灵魂伴侣文字颜色也微调
+            document.getElementById('personality-match').style.color = accentColor;
+
+            // 渲染维度条（保持原粉色高亮）
             updateAxis('ir-left', 'ir-right', 'ir-val-l', 'ir-val-r', scores.I, scores.R);
             updateAxis('rp-left', 'rp-right', 'rp-val-l', 'rp-val-r', scores.R_total, scores.P);
             updateAxis('em-left', 'em-right', 'em-val-l', 'em-val-r', scores.E, scores.M);
@@ -709,6 +857,14 @@
         }
 
         function restartTest() {
+            // 重置颜色
+            document.getElementById('personality-tag').style.color = '';
+            const restartBtn = document.querySelector('.restart');
+            restartBtn.style.background = '';
+            const infoBox = document.getElementById('result-info-box');
+            infoBox.style.borderColor = '';
+            infoBox.style.background = '';
+            
             document.getElementById('result').style.display = 'none';
             document.getElementById('home').style.display = 'block';
         }
